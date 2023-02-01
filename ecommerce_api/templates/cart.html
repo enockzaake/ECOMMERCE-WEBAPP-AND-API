@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+</head>
+<body>
+    {% if not orders %}
+        Cart is empty
+        {% else %}
+            {% for item in orders %}
+                <div>
+                    PRODUCT:{{item.item.name}}<br>
+                    PRICE:{{item.item.price}}<br>
+                    QUANTITY: {{item.quantity}}<br>
+                    ITEM TOTAL:{{item.get_total_price}}<br>
+                    <a href="{% url 'remove_from_cart' item.item.id %}">Remove from cart</a><br>
+                    <a href="{% url 'reduce_quantity' item.item.id %}">Minus</a> &nbsp; || &nbsp;
+                    <a href="{% url 'increase_quantity' item.item.id %}">Plus</a>  
+                </div>
+                <hr>
+            {% endfor %}
+            CART TOTAL : {{cart_total}}
+    {% endif %}
+                 
+</body>
+</html>
