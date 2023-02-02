@@ -15,12 +15,21 @@ import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# configire environment variables
+import environ
+env=environ.Env()
+environ.Env.read_env()
+SECRET_KEY=env('SECRET_KEY')
+
+
+
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-@(-ku_3a4bh2fo0wvd6+$d1=he1(qzy^3k3pml2!6_kdz6p^*='
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -88,6 +97,12 @@ WSGI_APPLICATION = 'WEBSITE.wsgi.application'
 #         'PORT':'5432'
 #     }
 # }
+
+import dj_database_url
+DATABASES={
+    'default':dj_database_url.parse(env('DATABASE_URL'))
+}
+
 
 AUTH_USER_MODEL='authentication.CustomUser'
 AUTHENTICATION_BACKENDS =['authentication.backends.EmailBackend','django.contrib.auth.backends.ModelBackend',]
