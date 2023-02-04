@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ecommerce_api.models import Item,OrderItem,Order
 from .serializer import ItemSerializer,CartSerializer
-
+from ecommerce_api.views import add_to_cart
 class ItemsApi(ListAPIView):
     serializer_class = ItemSerializer
     queryset=Item.objects.all()
@@ -25,7 +25,8 @@ class AddItemToCartView(APIView):
     def post(self, request,format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            pass
+            add_to_cart(request,serializer.data.id)
+        
         
 
 
