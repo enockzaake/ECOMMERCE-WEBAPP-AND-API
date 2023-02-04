@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from ecommerce_api.models import Item,OrderItem,Order
 from .serializer import ItemSerializer,CartSerializer
-from ecommerce_api.views import add_to_cart
+from rest_framework import status
 class ItemsApi(ListAPIView):
     serializer_class = ItemSerializer
     queryset=Item.objects.all()
@@ -25,7 +25,25 @@ class AddItemToCartView(APIView):
     def post(self, request,format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            add_to_cart(request,serializer.data.get('id'))
+            item=get_object_or_404(Item,id=id)
+            order_item,created = OrderItem.objects.get_or_create(user=request.user,item=item)
+            order_qs = Order.objects.filter(user=request.user).order_by('id')
+            if order_qs.exists():
+                order=order_qs[0]
+                if order.items.filter(item__id = item.id).exists():
+                    order_item.quantity+=1
+                    order_item.save()
+                    return Response(CartSerializer(order_item).data,status=status.HTTP_201_CREATED)
+                else:
+                    order.items.add(order_item)
+                    return Response(CartSerializer(order_item).data,status=status.HTTP_202_ACCEPTED)
+            else:
+            # print("SESSION ID:",request.session.session_key)
+                order=Order.objects.create(user=request.user)
+                order.items.add(order_item)
+                order.save()
+                return Response(CartSerializer(order_item).data, status=status.HTTP_201_CREATED)
+            
         
         
 
