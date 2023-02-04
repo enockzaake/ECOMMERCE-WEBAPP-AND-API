@@ -25,7 +25,7 @@ class AddItemToCartView(APIView):
     def post(self, request,format=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            add_to_cart(request,serializer.data.id)
+            add_to_cart(request,serializer.data.pk)
         
         
 
