@@ -22,7 +22,7 @@ class CartApi(ListAPIView):
 
 class AddItemToCartView(APIView):
     serializer_class = CartSerializer
-    def post(self, request,format=None):
+    def post(self, request,id=None):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
             item=get_object_or_404(Item,id=id)
