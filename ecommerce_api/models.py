@@ -38,7 +38,7 @@ class OrderItem(models.Model):
         return self.item.price*self.quantity
     
     def __str__(self):
-        return self.user.email[:5]
+        return self.item.name   
   
 class Order(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)

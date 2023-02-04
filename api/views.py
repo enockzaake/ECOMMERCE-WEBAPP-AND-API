@@ -21,17 +21,12 @@ class CartApi(ListAPIView):
     queryset=OrderItem.objects.all()
 
 class AddItemToCartView(APIView):
-    def post(self, request):
-        item = Item.objects.get(id=request.data.get('item_id'))
-        cart = OrderItem.objects.get(id=request.data.get('cart_id'))
-        cart.items.add(item)
-        cart.save()
-        serializer = CartSerializer(cart)
-        return Response(serializer.data)
-
-
-
-
+    serializer_class = CartSerializer
+    def post(self, request,format=None):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            pass
+        
 
 
 
