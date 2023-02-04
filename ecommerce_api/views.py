@@ -40,6 +40,7 @@ def add_to_cart(request,id):
             order.items.add(order_item)
             return redirect('items')
     else:
+       # print("SESSION ID:",request.session.session_key)
         order=Order.objects.create(user=request.user)
         order.items.add(order_item)
         order.save()
