@@ -21,67 +21,25 @@ class CartApi(ListAPIView):
     queryset=OrderItem.objects.all()
 
 class AddItemToCartView(APIView):
-    serializer_class = CartSerializer
-    def post(self, request,id=None):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            item=get_object_or_404(Item,id=id)
-            order_item,created = OrderItem.objects.get_or_create(user=request.user,item=item)
-            order_qs = Order.objects.filter(user=request.user).order_by('id')
-            if order_qs.exists():
-                order=order_qs[0]
-                if order.items.filter(item__id = item.id).exists():
-                    order_item.quantity+=1
-                    order_item.save()
-                    return Response(CartSerializer(order_item).data,status=status.HTTP_201_CREATED)
-                else:
-                    order.items.add(order_item)
-                    return Response(CartSerializer(order_item).data,status=status.HTTP_202_ACCEPTED)
-            else:
-            # print("SESSION ID:",request.session.session_key)
-                order=Order.objects.create(user=request.user)
-                order.items.add(order_item)
-                order.save()
-                return Response(CartSerializer(order_item).data, status=status.HTTP_201_CREATED)
-            
-        
-        
+    def post(self, request,id):
+        user = request.user
+        item = request.data.get('item')
+        quantity = request.data.get('quantity', 1)
+
+        cart_item, created = OrderItem.objects.get_or_create(user=user, item=item)
+        if not created:
+            cart_item.quantity += quantity
+            cart_item.save()
+
+        serializer = CartSerializer(cart_item)
+        return Response(serializer.data)
+
+    def put(self, request, id):
+        cart_item = OrderItem.objects.get(pk=id)
+        cart_item.quantity = request.data.get('quantity', cart_item.quantity)
+        cart_item.save()
+
+        serializer = CartSerializer(cart_item)
+        return Response(serializer.data)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# @api_view(['POST'])
-# def addtocartapi(request,id):
-#     item=get_object_or_404(Item,id=id)
-#     order_item,created = OrderItem.objects.get_or_create(user=request.user,item=item)
-#     order_qs = Order.objects.filter(user=request.user).order_by('id')
-#     if order_qs.exists():
-#         order=order_qs[0]
-#         if order.items.filter(item__id = item.id).exists():
-#             order_item.quantity+=1
-#             order_item.save()
-#             return redirect('api/cart-api')
-#         else:
-#             order.items.add(order_item)
-#             return redirect('api/cart-api')
-#     else:
-#         order=Order.objects.create(user=request.user)
-#         order.items.add(order_item)
-#         order.save()
-#     return redirect('api/cart-api')
-  
